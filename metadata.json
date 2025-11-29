@@ -1,0 +1,8 @@
+{
+  "name": "DysJoyKoeur",
+  "description": "Assistant éducatif et ludique pour enfants dyslexiques avec IA et OCR.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
