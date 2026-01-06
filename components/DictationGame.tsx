@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { generateSentence, generateSpeech } from '../services/geminiService';
 import { Play, Sparkles, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 
+/**
+ * Composant de jeu "Dictée Magique".
+ * Permet à l'enfant d'entrer des mots, de générer une phrase (drôle ou sérieuse) contenant ces mots,
+ * de l'écouter, puis d'essayer de l'écrire sous la dictée.
+ */
 const DictationGame: React.FC = () => {
   const [words, setWords] = useState('');
   const [generatedText, setGeneratedText] = useState('');
@@ -10,6 +15,7 @@ const DictationGame: React.FC = () => {
   const [userAttempt, setUserAttempt] = useState('');
   const [feedback, setFeedback] = useState<'success' | 'fail' | null>(null);
 
+  // Gère la génération de la phrase via l'IA
   const handleGenerate = async () => {
     if (!words.trim()) return;
     setLoading(true);
@@ -20,7 +26,7 @@ const DictationGame: React.FC = () => {
     try {
       const sentence = await generateSentence(words, mode);
       setGeneratedText(sentence);
-      // Auto-play TTS upon generation for immediate reinforcement
+      // Lecture automatique (TTS) dès la génération pour un renforcement immédiat
       await generateSpeech(sentence, mode === 'fun' ? 'Puck' : 'Kore');
     } catch (e) {
       alert("Erreur lors de la création de la phrase.");
@@ -29,14 +35,16 @@ const DictationGame: React.FC = () => {
     }
   };
 
+  // Relance la lecture audio de la phrase générée
   const handleReplay = () => {
     if (generatedText) generateSpeech(generatedText, mode === 'fun' ? 'Puck' : 'Kore');
   };
 
+  // Vérifie si la phrase écrite par l'enfant correspond à la phrase générée
   const handleValidate = () => {
     if (!generatedText) return;
     
-    // Simple normalization for comparison (ignore punctuation/case slightly for kids)
+    // Normalisation simple pour la comparaison (ignorer la ponctuation/casse pour être indulgent)
     const normalize = (s: string) => s.toLowerCase().replace(/[.,!?;:]/g, '').trim();
     const isCorrect = normalize(userAttempt) === normalize(generatedText);
     

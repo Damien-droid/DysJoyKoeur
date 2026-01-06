@@ -1,7 +1,12 @@
 import Tesseract from 'tesseract.js';
 
-// Native implementation of image processing to avoid legacy library issues in React
-// This fulfills the "Pré-traitement (CamanJS)" requirement functionally.
+/**
+ * Traite une image (pré-traitement) et effectue une reconnaissance optique de caractères (OCR).
+ * Cette fonction simule un traitement d'image natif (gris, contraste, binarisation) avant d'utiliser Tesseract.js.
+ *
+ * @param imageFile Le fichier image à traiter.
+ * @returns Le texte extrait de l'image.
+ */
 export const processAndRecognize = async (imageFile: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -15,7 +20,7 @@ export const processAndRecognize = async (imageFile: File): Promise<string> => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) {
-        reject('Canvas not supported');
+        reject('Canvas non supporté');
         return;
       }
 
@@ -23,44 +28,44 @@ export const processAndRecognize = async (imageFile: File): Promise<string> => {
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // Access pixel data
+      // Accès aux données des pixels
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // Filter: Grayscale + Contrast Increase + Thresholding (Binarization)
-      const contrast = 100; // Drastic contrast increase (simulating +15-20 in Caman scale approx)
+      // Filtre: Niveaux de gris + Augmentation du contraste + Seuillage (Binarisation)
+      const contrast = 100; // Augmentation drastique du contraste
       const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
       const threshold = 150; 
 
       for (let i = 0; i < data.length; i += 4) {
-        // Grayscale (Luminosity method)
+        // Niveaux de gris (Méthode de la luminosité)
         const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
 
-        // Contrast
+        // Contraste
         let newColor = factor * (gray - 128) + 128;
         
-        // Threshold (Binarization)
+        // Seuillage (Binarisation)
         newColor = newColor > threshold ? 255 : 0;
 
         data[i] = newColor;     // R
         data[i + 1] = newColor; // G
         data[i + 2] = newColor; // B
-        // Alpha (data[i+3]) remains unchanged
+        // Alpha (data[i+3]) reste inchangé
       }
 
       ctx.putImageData(imageData, 0, 0);
 
-      // Convert processed canvas to blob for Tesseract
+      // Conversion du canvas traité en blob pour Tesseract
       canvas.toBlob(async (blob) => {
         if (!blob) {
-            reject('Image processing failed');
+            reject('Échec du traitement de l\'image');
             return;
         }
 
         try {
           const result = await Tesseract.recognize(
             blob,
-            'fra', // French language
+            'fra', // Langue française
             { 
               logger: m => console.log(m) 
             }

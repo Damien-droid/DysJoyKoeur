@@ -3,7 +3,11 @@ import { GoogleGenAI, Modality } from "@google/genai";
 const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
-// Helper to decode Base64
+/**
+ * Décode une chaîne Base64 en un tableau d'octets (Uint8Array).
+ * @param base64 La chaîne encodée en Base64.
+ * @returns Uint8Array contenant les données binaires décodées.
+ */
 function decode(base64: string) {
   const binaryString = atob(base64);
   const len = binaryString.length;
@@ -14,7 +18,11 @@ function decode(base64: string) {
   return bytes;
 }
 
-// Helper to play audio buffer
+/**
+ * Joue des données audio brutes (PCM) reçues de l'API Gemini.
+ * @param base64Data Les données audio encodées en Base64.
+ * @param sampleRate Le taux d'échantillonnage (par défaut 24000 Hz pour Gemini).
+ */
 async function playAudioData(base64Data: string, sampleRate = 24000) {
     try {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -22,11 +30,8 @@ async function playAudioData(base64Data: string, sampleRate = 24000) {
         
         const bytes = decode(base64Data);
         
-        // Decode raw PCM manually if needed, but the response usually gives us raw data that needs specific handling
-        // For the new Gemini TTS, it returns raw PCM. We need to wrap it in a WAV container or decode directly.
-        // Let's try simpler Float32 conversion if it is raw PCM or use decodeAudioData if it has headers.
-        
-        // However, the new @google/genai examples show manual decoding for PCM.
+        // Les données audio de Gemini TTS sont généralement en PCM brut.
+        // Nous les convertissons ici en Float32 pour l'API Web Audio.
         const dataInt16 = new Int16Array(bytes.buffer);
         const float32Data = new Float32Array(dataInt16.length);
         for (let i = 0; i < dataInt16.length; i++) {
@@ -46,10 +51,16 @@ async function playAudioData(base64Data: string, sampleRate = 24000) {
         });
 
     } catch (error) {
-        console.error("Audio playback error:", error);
+        console.error("Erreur de lecture audio:", error);
     }
 }
 
+/**
+ * Génère une phrase contenant une liste de mots donnés, adaptée aux enfants.
+ * @param words Les mots à inclure dans la phrase.
+ * @param mode Le mode de génération ('serious' pour scolaire, 'fun' pour ludique).
+ * @returns La phrase générée par l'IA.
+ */
 export const generateSentence = async (words: string, mode: 'serious' | 'fun'): Promise<string> => {
   try {
     const prompt = mode === 'fun' 
@@ -58,15 +69,20 @@ export const generateSentence = async (words: string, mode: 'serious' | 'fun'): 
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: prompt,
+      contents: [{ parts: [{ text: prompt }] }],
     });
     return response.text?.trim() || "Désolé, je n'ai pas pu inventer une phrase.";
   } catch (error) {
-    console.error("Gemini Error:", error);
+    console.error("Erreur Gemini:", error);
     throw new Error("Erreur de génération IA");
   }
 };
 
+/**
+ * Génère de la parole (Text-to-Speech) à partir d'un texte.
+ * @param text Le texte à lire.
+ * @param voiceName La voix à utiliser ('Puck' ou 'Kore').
+ */
 export const generateSpeech = async (text: string, voiceName: 'Puck' | 'Kore' = 'Kore'): Promise<void> => {
   try {
     const response = await ai.models.generateContent({
@@ -87,7 +103,7 @@ export const generateSpeech = async (text: string, voiceName: 'Puck' | 'Kore' = 
         await playAudioData(base64Audio);
     }
   } catch (error) {
-    console.error("TTS Error:", error);
+    console.error("Erreur TTS:", error);
     throw new Error("Erreur de lecture audio");
   }
 };

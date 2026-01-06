@@ -3,12 +3,18 @@ import { generateSpeech } from '../services/geminiService';
 import { Music, Mic, GripVertical, Check } from 'lucide-react';
 import { PoetryLine } from '../types';
 
+/**
+ * Composant de jeu "Poésie Musicale".
+ * Permet à l'enfant de remettre dans l'ordre les vers d'un poème.
+ * Chaque vers peut être écouté individuellement grâce au TTS.
+ */
 const PoetryGame: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [lines, setLines] = useState<PoetryLine[]>([]);
   const [isGameActive, setIsGameActive] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
 
+  // Initialise le jeu en découpant le texte en lignes et en les mélangeant
   const startGame = () => {
     if (!inputText.trim()) return;
     
@@ -27,11 +33,12 @@ const PoetryGame: React.FC = () => {
     setIsComplete(false);
   };
 
+  // Joue l'audio pour une ligne spécifique
   const handlePlayLine = (text: string) => {
     generateSpeech(text, 'Puck');
   };
 
-  // Simple array swap for drag and drop simulation (simplified for code compactness)
+  // Déplace une ligne vers le haut ou le bas (simulation simple de drag & drop)
   const moveLine = (fromIndex: number, direction: 'up' | 'down') => {
     if (isComplete) return;
     const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
@@ -46,6 +53,7 @@ const PoetryGame: React.FC = () => {
     checkWin(newLines);
   };
 
+  // Vérifie si toutes les lignes sont dans l'ordre correct
   const checkWin = (currentLines: PoetryLine[]) => {
     const isWin = currentLines.every((line, index) => line.originalIndex === index);
     if (isWin) {

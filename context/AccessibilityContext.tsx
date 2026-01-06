@@ -8,6 +8,10 @@ interface AccessibilityContextType extends UserSettings {
 
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
 
+/**
+ * Fournit le contexte d'accessibilité (police dyslexique, espacement) à l'application.
+ * Gère la persistance des réglages dans le localStorage.
+ */
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<UserSettings>(() => {
     const saved = localStorage.getItem('dys_settings');
@@ -18,7 +22,10 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('dys_settings', JSON.stringify(settings));
   }, [settings]);
 
+  // Bascule la police adaptée aux dyslexiques
   const toggleFont = () => setSettings(prev => ({ ...prev, isDyslexicFont: !prev.isDyslexicFont }));
+
+  // Bascule l'espacement augmenté pour une meilleure lisibilité
   const toggleSpacing = () => setSettings(prev => ({ ...prev, isHighSpacing: !prev.isHighSpacing }));
 
   return (
@@ -30,6 +37,9 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+/**
+ * Hook personnalisé pour utiliser les paramètres d'accessibilité dans n'importe quel composant.
+ */
 export const useAccessibility = () => {
   const context = useContext(AccessibilityContext);
   if (!context) throw new Error('useAccessibility must be used within AccessibilityProvider');

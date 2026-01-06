@@ -3,6 +3,11 @@ import { Camera, Upload, Loader2, FileText, Play } from 'lucide-react';
 import { processAndRecognize } from '../services/ocrService';
 import { generateSpeech } from '../services/geminiService';
 
+/**
+ * Composant "Scanner Intelligent".
+ * Permet de prendre une photo ou d'uploader une image, d'extraire le texte via OCR,
+ * et de lire le texte à voix haute (TTS).
+ */
 const OCRScanner: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedText, setExtractedText] = useState('');
@@ -15,6 +20,7 @@ const OCRScanner: React.FC = () => {
     }
   };
 
+  // Traite le fichier image sélectionné
   const processFile = async (file: File) => {
     setIsProcessing(true);
     setExtractedText('');
@@ -29,6 +35,7 @@ const OCRScanner: React.FC = () => {
     }
   };
 
+  // Lance la lecture du texte extrait
   const handleReadAloud = () => {
     if (extractedText) generateSpeech(extractedText, 'Kore');
   };

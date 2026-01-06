@@ -7,10 +7,15 @@ const MOCK_POSTS: Post[] = [
     { id: '2', author: 'Marc (Papa de Julie)', content: 'Astuce : Pour la poésie, on le fait en chantant, ça marche super bien avec le mode "Fun".', likes: 8 },
 ];
 
+/**
+ * Composant "Le Coin des Parents".
+ * Tableau de bord permettant aux parents de voir les statistiques et d'échanger des astuces.
+ */
 const ParentDashboard: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
   const [newPost, setNewPost] = useState('');
 
+  // Ajoute un nouveau message au fil de discussion
   const handlePost = () => {
     if (!newPost.trim()) return;
     const post: Post = {

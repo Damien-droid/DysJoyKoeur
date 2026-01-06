@@ -8,9 +8,14 @@ import ParentDashboard from './components/ParentDashboard';
 import { AppMode } from './types';
 import { Sparkles } from 'lucide-react';
 
+/**
+ * Composant racine de l'application.
+ * Gère l'état global du mode (écran affiché) et le rendu conditionnel des composants.
+ */
 const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>(AppMode.HOME);
 
+  // Fonction pour rendre le contenu en fonction du mode sélectionné
   const renderContent = () => {
     switch (mode) {
       case AppMode.DICTATION:
