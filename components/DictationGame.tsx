@@ -15,7 +15,16 @@ const DictationGame: React.FC = () => {
   const [userAttempt, setUserAttempt] = useState('');
   const [feedback, setFeedback] = useState<'success' | 'fail' | null>(null);
 
-  // Gère la génération de la phrase via l'IA
+  /**
+   * Génère une phrase en utilisant l'IA.
+   *
+   * @neuroscience
+   * La "Dictée Magique" utilise deux modes :
+   * 1. Mode Sérieux : Pour l'usage scolaire classique.
+   * 2. Mode Rigolo (Humour) : Génère des phrases absurdes mais logiques.
+   * L'humour crée un ancrage émotionnel fort (libération de dopamine) qui facilite la mémorisation
+   * lexicale et réduit l'anxiété liée à l'orthographe.
+   */
   const handleGenerate = async () => {
     if (!words.trim()) return;
     setLoading(true);
@@ -87,7 +96,7 @@ const DictationGame: React.FC = () => {
               onClick={() => setMode('fun')}
               className={`flex-1 py-3 px-4 rounded-xl font-bold transition-all ${mode === 'fun' ? 'bg-purple-500 text-white shadow-lg scale-105' : 'bg-purple-100 text-purple-600'}`}
             >
-              Mode Rigolo 🤪
+              Mode Humour 🤪
             </button>
           </div>
 
