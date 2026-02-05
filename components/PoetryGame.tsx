@@ -3,12 +3,24 @@ import { generateSpeech } from '../services/geminiService';
 import { Music, Mic, GripVertical, Check } from 'lucide-react';
 import { PoetryLine } from '../types';
 
+/**
+ * Composant de jeu "Poésie en Musique".
+ * Permet à l'enfant de remettre dans l'ordre les vers d'un poème en musique.
+ *
+ * @neuroscience
+ * Le rythme agit comme une "béquille cognitive" pour la mémoire verbale.
+ * Les comptines et le rythme (Rap, Slam, Pop) exploitent la mémoire implicite et séquentielle,
+ * ce qui est particulièrement efficace pour les enfants dyslexiques.
+ * L'apprentissage devient multisensoriel (visuel + auditif + rythmique).
+ */
 const PoetryGame: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [lines, setLines] = useState<PoetryLine[]>([]);
   const [isGameActive, setIsGameActive] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [musicStyle, setMusicStyle] = useState<'pop' | 'rap' | 'slam' | 'comptine'>('pop');
 
+  // Initialise le jeu en découpant le texte en lignes et en les mélangeant
   const startGame = () => {
     if (!inputText.trim()) return;
     
@@ -27,11 +39,13 @@ const PoetryGame: React.FC = () => {
     setIsComplete(false);
   };
 
+  // Joue l'audio pour une ligne spécifique
   const handlePlayLine = (text: string) => {
-    generateSpeech(text, 'Puck');
+    // On passe le style musical pour influencer l'intonation (simulé via le prompt TTS dans le service)
+    generateSpeech(text, 'Puck', musicStyle);
   };
 
-  // Simple array swap for drag and drop simulation (simplified for code compactness)
+  // Déplace une ligne vers le haut ou le bas (simulation simple de drag & drop)
   const moveLine = (fromIndex: number, direction: 'up' | 'down') => {
     if (isComplete) return;
     const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
@@ -46,6 +60,7 @@ const PoetryGame: React.FC = () => {
     checkWin(newLines);
   };
 
+  // Vérifie si toutes les lignes sont dans l'ordre correct
   const checkWin = (currentLines: PoetryLine[]) => {
     const isWin = currentLines.every((line, index) => line.originalIndex === index);
     if (isWin) {
@@ -60,8 +75,24 @@ const PoetryGame: React.FC = () => {
         <div className="bg-white rounded-2xl p-6 shadow-xl border-4 border-pink-200">
           <h2 className="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
             <Music className="w-8 h-8" />
-            Poésie Musicale
+            Poésie en Musique
           </h2>
+
+          <div className="mb-4">
+             <label className="block text-gray-700 font-bold mb-2">Choisis ton style musical :</label>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {['pop', 'rap', 'slam', 'comptine'].map((style) => (
+                  <button
+                    key={style}
+                    onClick={() => setMusicStyle(style as any)}
+                    className={`py-2 px-3 rounded-lg font-bold capitalize transition-all ${musicStyle === style ? 'bg-pink-50 text-white shadow-md' : 'bg-pink-50 text-pink-400 hover:bg-pink-100'}`}
+                  >
+                    {style}
+                  </button>
+                ))}
+             </div>
+          </div>
+
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -72,7 +103,7 @@ const PoetryGame: React.FC = () => {
             onClick={startGame}
             className="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white font-black text-xl rounded-xl shadow-lg transition-transform active:scale-95"
           >
-            Jouer avec ma poésie !
+            Transformer en chanson ! 🎵
           </button>
         </div>
       ) : (

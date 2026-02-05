@@ -17,24 +17,28 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * Composant Layout principal qui enveloppe l'application.
+ * Contient la barre latérale de navigation et les contrôles d'accessibilité.
+ */
 const Layout: React.FC<LayoutProps> = ({ currentMode, setMode, children }) => {
   const { isDyslexicFont, isHighSpacing, toggleFont, toggleSpacing } = useAccessibility();
 
   const navItems = [
-    { mode: AppMode.DICTATION, label: 'Dictée', icon: <BookOpen className="w-6 h-6" />, color: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' },
-    { mode: AppMode.POETRY, label: 'Poésie', icon: <Music className="w-6 h-6" />, color: 'bg-pink-100 text-pink-700 hover:bg-pink-200' },
-    { mode: AppMode.OCR, label: 'Scanner', icon: <Camera className="w-6 h-6" />, color: 'bg-green-100 text-green-700 hover:bg-green-200' },
+    { mode: AppMode.DICTATION, label: 'Dictée Magique', icon: <BookOpen className="w-6 h-6" />, color: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' },
+    { mode: AppMode.POETRY, label: 'Poésie en Musique', icon: <Music className="w-6 h-6" />, color: 'bg-pink-100 text-pink-700 hover:bg-pink-200' },
+    { mode: AppMode.OCR, label: 'Vision JoKeur', icon: <Camera className="w-6 h-6" />, color: 'bg-green-100 text-green-700 hover:bg-green-200' },
     { mode: AppMode.PARENTS, label: 'Parents', icon: <Users className="w-6 h-6" />, color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200' },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-teal-50 flex flex-col md:flex-row">
       
-      {/* Sidebar Navigation */}
+      {/* Barre de navigation latérale */}
       <nav className="md:w-64 bg-white shadow-xl z-20 flex flex-col">
         <div className="p-6 border-b border-gray-100 flex items-center gap-2 cursor-pointer" onClick={() => setMode(AppMode.HOME)}>
-           <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg">D</div>
-           <h1 className="text-xl font-black text-gray-800 tracking-tight">DysLexi'Fun</h1>
+           <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg">D</div>
+           <h1 className="text-xl font-black text-gray-800 tracking-tight">Dys JoyKoeur</h1>
         </div>
 
         <div className="p-4 space-y-2 flex-1">
@@ -60,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ currentMode, setMode, children }) => {
           ))}
         </div>
 
-        {/* Accessibility Floating/Sticky Panel in Sidebar */}
+        {/* Panneau flottant/collant pour l'accessibilité dans la barre latérale */}
         <div className="p-4 border-t border-gray-100 bg-blue-50">
            <p className="text-xs font-bold text-blue-400 uppercase mb-3">Confort de lecture</p>
            <div className="flex gap-2">
@@ -84,7 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ currentMode, setMode, children }) => {
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Contenu principal */}
       <main className="flex-1 overflow-y-auto p-4 md:p-8">
         {children}
       </main>
